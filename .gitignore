@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+
+# Environment / secrets
+.env
+.env.*
+*.env
+secrets.json
+config.local.py
+
+# VS Code / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# Jupyter / notebooks
+.ipynb_checkpoints/
+
+# Local data / uploads
+uploads/
+backend/uploads/
+*.sqlite3
+*.db
+
+# RAG / AI local artifacts
+qdrant_data/
+vector_store/
+chroma/
+faiss_index/
+embeddings/
+models/
+.cache/
+hf_cache/
+downloads/
+checkpoints/
+*.bin
+*.safetensors
+
+# Coverage / test output
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# OS generated files
+Desktop.ini
+$RECYCLE.BIN/
