@@ -11,7 +11,9 @@ env/
 ENV/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .pyre/
+.python-version
 
 # Environment / secrets
 .env
@@ -19,12 +21,16 @@ ENV/
 *.env
 secrets.json
 config.local.py
+.streamlit/
 
 # VS Code / editors
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
+*.temp
+*.bak
 .DS_Store
 Thumbs.db
 
@@ -39,6 +45,7 @@ dist/
 .eggs/
 *.egg
 pip-wheel-metadata/
+node_modules/
 
 # Jupyter / notebooks
 .ipynb_checkpoints/

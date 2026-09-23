@@ -56,3 +56,24 @@ def list_documents():
 
 def delete_document(document_id):
     client.delete(collection_name=COLLECTION_NAME, points_selector=Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))]))
+
+def list_chunks():
+    chunks = []
+
+    offset = None
+
+    while True: 
+        points, offset = client.scroll(collection_name=COLLECTION_NAME, limit=100, offset=offset, with_payload=True, with_vector=False)
+
+        for point in points:
+            chunks.append({
+                "text": point.payload["text"],
+                "filename": point.payload["filename"],
+                "document_id": point.payload["document_id"],
+                "chunk_index": point.payload["chunk_index"]
+            })
+
+        if offset is None:
+            break
+
+    return chunks
