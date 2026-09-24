@@ -1,4 +1,4 @@
-from retrieval import rerank
+from retrieval.rerank import rerank
 from retrieval.vector_search import vector_search
 from retrieval.keyword_search import keyword_search
 

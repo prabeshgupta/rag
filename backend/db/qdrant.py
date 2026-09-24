@@ -1,77 +1,149 @@
 from uuid import uuid4
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct, MatchValue, FieldCondition, Filter
+from qdrant_client.models import (
+    Distance,
+    VectorParams,
+    PointStruct,
+    MatchValue,
+    FieldCondition,
+    Filter,
+)
 
-client = QdrantClient("localhost", port=6333)
+
+client = QdrantClient(
+    host="localhost",
+    port=6333,
+)
 
 COLLECTION_NAME = "documents"
 
+
 def create_collection(vector_size: int):
+
     collections = client.get_collections().collections
 
-    exists = any(collection.name == COLLECTION_NAME for collection in collections)
+    exists = any(
+        collection.name == COLLECTION_NAME
+        for collection in collections
+    )
 
     if exists:
         return
 
     client.create_collection(
         collection_name=COLLECTION_NAME,
-        vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE)
+        vectors_config=VectorParams(
+            size=vector_size,
+            distance=Distance.COSINE,
+        ),
     )
 
+
 def store_embeddings(embeddings):
+
     points = []
 
     for item in embeddings:
-        points.append(PointStruct(id= str(uuid4()), vector=item["embedding"], payload={"text": item["text"],"filename": item["filename"], "document_id": item["document_id"], "chunk_index": item["chunk_index"],}))
 
-    client.upsert(collection_name=COLLECTION_NAME, points=points)
+        points.append(
+            PointStruct(
+                id=str(uuid4()),
+                vector=item["embedding"],
+                payload={
+                    "text": item["text"],
+                    "filename": item["filename"],
+                    "document_id": item["document_id"],
+                    "chunk_index": item["chunk_index"],
+                },
+            )
+        )
+
+    client.upsert(
+        collection_name=COLLECTION_NAME,
+        points=points,
+    )
+
 
 def list_documents():
-    documents = {}
 
+    documents = {}
     offset = None
 
     while True:
-        points, offset = client.scroll(collection_name=COLLECTION_NAME, limit=100, offset=offset, with_payload=True, with_vector=False)
+
+        points, offset = client.scroll(
+            collection_name=COLLECTION_NAME,
+            limit=100,
+            offset=offset,
+            with_payload=True,
+            with_vectors=False,
+        )
 
         for point in points:
+
             payload = point.payload
 
             document_id = payload["document_id"]
 
             if document_id not in documents:
+
                 documents[document_id] = {
                     "document_id": document_id,
                     "filename": payload["filename"],
-                    "chunks": 0
+                    "chunks": 0,
                 }
+
             documents[document_id]["chunks"] += 1
 
         if offset is None:
-                break
+            break
 
     return list(documents.values())
 
-def delete_document(document_id):
-    client.delete(collection_name=COLLECTION_NAME, points_selector=Filter(must=[FieldCondition(key="document_id", match=MatchValue(value=document_id))]))
+
+def delete_document(document_id: str):
+
+    client.delete(
+        collection_name=COLLECTION_NAME,
+        points_selector=Filter(
+            must=[
+                FieldCondition(
+                    key="document_id",
+                    match=MatchValue(
+                        value=document_id
+                    ),
+                )
+            ]
+        ),
+    )
+
 
 def list_chunks():
-    chunks = []
 
+    chunks = []
     offset = None
 
-    while True: 
-        points, offset = client.scroll(collection_name=COLLECTION_NAME, limit=100, offset=offset, with_payload=True, with_vector=False)
+    while True:
+
+        points, offset = client.scroll(
+            collection_name=COLLECTION_NAME,
+            limit=100,
+            offset=offset,
+            with_payload=True,
+            with_vectors=False,
+        )
 
         for point in points:
-            chunks.append({
-                "text": point.payload["text"],
-                "filename": point.payload["filename"],
-                "document_id": point.payload["document_id"],
-                "chunk_index": point.payload["chunk_index"]
-            })
+
+            chunks.append(
+                {
+                    "text": point.payload["text"],
+                    "filename": point.payload["filename"],
+                    "document_id": point.payload["document_id"],
+                    "chunk_index": point.payload["chunk_index"],
+                }
+            )
 
         if offset is None:
             break

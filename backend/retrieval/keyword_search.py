@@ -1,4 +1,4 @@
-from rank_bm25 import BM250kapi
+from rank_bm25 import BM25Okapi
 from db.qdrant import list_chunks
 
 def keyword_search(question, limit=10):
@@ -9,7 +9,7 @@ def keyword_search(question, limit=10):
 
     corpus = [chunk["text"].split() for chunk in chunks]
 
-    bm25 = BM250kapi(corpus)
+    bm25 = BM25Okapi(corpus)
 
     scores =  bm25.get_scores(question.split())
 
